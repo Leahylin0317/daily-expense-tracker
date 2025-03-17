@@ -58,15 +58,20 @@ def generate_report():
     conn.close()
 
     # 按类别统计
-    category_df = df.groupby('category')['amount'].sum().reset_index()
+    category_data = df.groupby('category')['amount'].sum().reset_index().to_dict('records')
     
-    # 生成饼图
-    plt.figure(figsize=(10,6))
-    plt.pie(category_df['amount'], labels=category_df['category'], autopct='%1.1f%%')
-    plt.title('消费类别占比')
+    # 生成饼图（关键调整：减小尺寸并清理）
+    plt.figure(figsize=(7, 3.5))  # 进一步缩小尺寸
+    plt.pie([item['amount'] for item in category_data], 
+            labels=[item['category'] for item in category_data], 
+            autopct='%1.1f%%',
+            pctdistance=0.8)  # 百分比标签位置
+    plt.title('消费类别占比', y=1.05)  # 标题位置上移
+    plt.tight_layout()  # 优化边距
     plt.savefig('static/category_pie.png')
-    
-    return render_template('report.html')
+    plt.close()  # 清理图形资源
+
+    return render_template('report.html', category_data=category_data)
 
 if __name__ == '__main__':
     init_db()
