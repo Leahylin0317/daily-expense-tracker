@@ -174,3 +174,4 @@ cython_debug/
 .pypirc
 data/expenses.db
 static/category_pie.pngdata/expenses.db
+*.png
